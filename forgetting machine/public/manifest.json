@@ -1,6 +1,8 @@
 {
 	"name": "Forgetting Machine",
+	"description": "",
 	"orientation": "natural",
+	"short_name": "Forgetting Machine",
 	"start_url": ".",
 	"background_color": "#000",
 	"display": "standalone",
