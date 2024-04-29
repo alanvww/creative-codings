@@ -3,7 +3,8 @@
 // Collaborate with Kyrie Yang
 
 const RECORD_KEY = '1';
-const PLAY_KEY = '2';
+const STOP_KEY = '2';
+const PLAY_KEY = '3';
 
 let mic, recorder, soundFile;
 let isRecording = false;
@@ -17,7 +18,7 @@ let segments = [];
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-	background(220);
+	background(30, 255, 10);
 	textAlign(CENTER, CENTER);
 
 	mic = new p5.AudioIn();
@@ -31,12 +32,10 @@ function setup() {
 	soundFile = new p5.SoundFile();
 
 	window.addEventListener('keydown', handleKeyPress);
-	updateStatus('Press 1 to record.');
+	updateStatus('Press button to record.');
 }
 
 function draw() {
-	background(220);
-
 	if (isRecording) {
 		displayRecordingWaveform();
 	}
@@ -44,35 +43,46 @@ function draw() {
 	isPlaying = soundFile.isPlaying();
 
 	if (isPlaying) {
+		background(252, 171, 78);
 		updateStatus('Playing...');
 		played = true;
 	} else if (!isPlaying && recorded && played) {
-		updateStatus('Audio played. Press 2 to play again or 1 to record.');
+		background(252, 171, 78);
+		updateStatus('Audio played. Press button to record again.');
 	}
 
 	displayStatusText();
 }
 
 function handleKeyPress(event) {
-	if (event.key === RECORD_KEY) {
-		toggleRecording();
+	if (event.key == RECORD_KEY) {
+		toggleRecording(event.key);
 	} else if (event.key === PLAY_KEY && segments.length > 0) {
 		shuffleAndPlaySegments();
+	} else {
+		toggleRecording(event.key);
 	}
 }
 
-function toggleRecording() {
-	if (!isRecording) {
+function toggleRecording(key) {
+	if (key == RECORD_KEY) {
 		recorder.record(soundFile);
 		isRecording = true;
 		recorded = false;
 		startTime = millis();
-		updateStatus('Recording... Press 1 again to stop.');
+		textSize(16);
+		fill(255);
+		noStroke();
+		updateStatus('Recording... Press button again to stop.');
 	} else {
 		recorder.stop();
 		isRecording = false;
 		recorded = true;
-		updateStatus('Done! Press 2 to play.');
+		background(255, 30, 30);
+		textSize(16);
+		fill(255);
+		noStroke();
+		updateStatus('Done! Press button to play.');
 		setTimeout(() => createSegmentsFromPeaks(), 1000); // Delay to ensure soundFile is ready
 	}
 }
@@ -106,9 +116,11 @@ function playSegmentsInOrder(index) {
 
 function displayRecordingWaveform() {
 	let waveform = fft.waveform();
+	background(255, 30, 30);
+
 	noFill();
 	beginShape();
-	stroke(20);
+	stroke(255);
 	strokeWeight(1);
 	for (let i = 0; i < waveform.length; i++) {
 		let x = map(i, 0, waveform.length, 0, width);
@@ -119,7 +131,7 @@ function displayRecordingWaveform() {
 
 	let recordTime = (millis() - startTime) / 1000;
 	textSize(16);
-	fill(255, 0, 0);
+	fill(255);
 	noStroke();
 	text(`Recording Time: ${recordTime.toFixed(2)} s`, 10, 20);
 }
@@ -131,7 +143,6 @@ function updateStatus(message) {
 
 function displayStatusText() {
 	textSize(16);
-	fill(0);
 	noStroke();
 	textAlign(CENTER, BOTTOM);
 	text(statusText, width / 2, height - 10);
