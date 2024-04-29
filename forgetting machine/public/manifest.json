@@ -1,0 +1,9 @@
+{
+	"name": "Forgetting Machine",
+	"orientation": "natural",
+	"start_url": ".",
+	"background_color": "#000",
+	"display": "standalone",
+	"scope": "/",
+	"theme_color": "#000"
+}
